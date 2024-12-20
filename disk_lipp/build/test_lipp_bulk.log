@@ -1,0 +1,14 @@
+found flag keys_file = /home/ywm/DiskZM/datasets//synthetic/uniform_dense_1K_uint64
+found flag op_type = bulk
+found flag index_file = index_file
+found flag total_count = 1000
+found flag has_size = 1
+keys head: 
+42
+43
+44
+45
+46
+start to build... 
+slope:6.016028,key:43,intercept:0.000000bulk load time: 0.000506199
+file size:148560

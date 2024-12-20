@@ -1,0 +1,3 @@
+/home/ywm/DiskZM/disk_lipp/build/CMakeFiles/lipp.dir
+/home/ywm/DiskZM/disk_lipp/build/CMakeFiles/edit_cache.dir
+/home/ywm/DiskZM/disk_lipp/build/CMakeFiles/rebuild_cache.dir

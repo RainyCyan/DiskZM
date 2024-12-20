@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/lipp.dir/test.cpp.o -o lipp 

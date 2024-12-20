@@ -1,0 +1,12 @@
+found flag keys_file = /home/ywm/DiskZM/datasets//synthetic/uniform_dense_1K_uint64
+found flag op_type = lookup
+found flag index_file = index_file
+found flag total_count = 1000
+found flag has_size = 1
+found flag search_count = 100
+found flag step = 10
+start to test... 
+start to record... 
+229637 ops
+1.97 block/lookup
+not found:0

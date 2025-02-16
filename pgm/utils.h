@@ -1,4 +1,3 @@
-// FROM ALEX Project
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 

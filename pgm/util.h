@@ -1,4 +1,3 @@
-// FROM ALEX Project
 #include <iostream>
 #include <map>
 #include <sstream>

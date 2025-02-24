@@ -962,9 +962,6 @@ namespace pgm
         using size_type = size_t;
         using value_type = decltype(morton::Decode(0));
 
-        //illegal intf
-        auto pgm_intf(){return pgm;}
-
         /**
          * Constructs an empty multidimensional container.
          */
@@ -1018,14 +1015,17 @@ namespace pgm
         // }
 
         std::vector<value_type> range_query(FILE* file_handler,const value_type &min, const value_type &max,int &tc){
+            std::cout<<"pgm range query"<<std::endl;
             std::vector<value_type> result;
             auto zmin=encode(min);
             auto zmax=encode(max);
+            std::cout<<"zmin"<<zmin<<"zmax"<<zmax<<std::endl;
             int c,lc;
             c=lc=0;
             pgm::PGMIndex<uint64_t, Epsilon> pgm_tmp(file_handler,true);
+            std::cout<<"pgm_tmp search_disk"<<std::endl;
             auto min_pos=pgm_tmp.search_disk(file_handler,zmin,&c,&lc);
-            // std::cout<<c<<std::endl;
+            std::cout<<c<<std::endl;
             tc+=c;
             auto max_pos=pgm_tmp.search_disk(file_handler,zmax,&c,&lc);
             tc+=c;

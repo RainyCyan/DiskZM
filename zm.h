@@ -147,7 +147,7 @@ void DiskZMI<KEY_TYPE, Dim, Epsilon>::
     auto end = std::chrono::steady_clock::now();
     this->build_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     std::cout << "Build Time: " << this->get_build_time() << " [ms]" << std::endl;
-    std::cout << "Index Size: " << this->index_size() << " Bytes" << std::endl;
+    // std::cout << "Index Size: " << this->index_size() << " Bytes" << std::endl;
 }
 
 template <class KEY_TYPE, size_t Dim, size_t Epsilon>

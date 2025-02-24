@@ -1,73 +1,81 @@
+//g++ multidimensional.cpp -mbmi2 -std=c++17 -I../include -o multidimensional
 #include <iostream>
+#include <cstdlib>
 #include <vector>
 #include <algorithm>
 #include <cmath>
 #include <numeric>
-
-template<size_t Dim>
-class point {
-public:
-    point() = default;
-
-    friend std::ostream& operator<<(std::ostream& out, const point& p) {
-        out << "coords:[ ";
-        for (size_t d = 0; d < Dim; d++)
-            out << p.coords[d] << " ";
-        out << "], rank:[ ";
-        for (size_t d = 0; d < Dim; d++)
-            out << p.rank[d] << " ";
-        out << "];";
-        return out;
-    }
-
-    double* coords;
-    size_t* rank;  // sorted by the selected dim and the dim's val's rank
-    size_t z_addr; // mapping val by the rank
-};
-
-template<size_t Dim>
-inline void argsort(std::vector<point<Dim>>& points) {
-    auto n = points.size();
-    for (size_t i = 0; i < Dim; i++) {
-        std::vector<size_t> indices(n);
-        std::iota(indices.begin(), indices.end(), 0);
-
-        // Sort indices based on the values in the i-th dimension
-        std::sort(indices.begin(), indices.end(), [&points, i](size_t pos1, size_t pos2) {
-            return points[pos1].coords[i] < points[pos2].coords[i];
-        });
-
-        // Assign ranks to the points based on the sorted order
-        for (size_t j = 0; j < n; j++) {
-            points[indices[j]].rank[i] = j;
-        }
-    }
-}
+#include "diskzm.hpp"
+#ifndef DIM
+#define DIM 2
+#endif
 
 int main() {
-    constexpr size_t Dim = 2;
-    std::vector<point<Dim>> pts(5);
-
-    // Allocate space for point
-    for (int i = 0; i < 5; i++) {
-        pts[i].coords = new double[Dim];
-        pts[i].rank = new size_t[Dim];
-        for (size_t d = 0; d < Dim; d++)
-            pts[i].coords[d] = std::fmod((i + 1) * 13.0 / 5, 7);
+    std::vector<point<DIM>> data;
+    data.reserve(1000000);
+    //generate random points using point template array of size DIM
+    srand(time(0));
+    for (size_t i = 0; i < 1000000; ++i)
+    {
+        point<DIM> p;
+        for (size_t d = 0; d < DIM; ++d)
+        {
+            p[d] = std::rand() % 100000;
+        }
+        data.emplace_back(p);
     }
-
-    argsort(pts);
-
-    // Print points
-    for (const auto& p : pts) {
-        std::cout << p << std::endl;
+    
+    constexpr size_t eps=64;
+    DiskZM<DIM,eps> diskzm(data);
+    
+    //range query
+    std::vector<box<DIM>> query_boxes;
+    query_boxes.reserve(1000);
+    for (size_t i = 0; i < 1000; ++i)
+    {
+        point<DIM> min_corner;
+        point<DIM> max_corner;
+        for (size_t d = 0; d < DIM; ++d)
+        {
+            min_corner[d] = std::rand() % 100000;
+            //static query box size
+            max_corner[d] = min_corner[d] + 10;
+            // max_corner[d] = std::rand() % 100000;
+        }
+        query_boxes.emplace_back(min_corner, max_corner);
     }
-
-    // Free allocated memory
-    for (auto& p : pts) {
-        delete[] p.coords;
-        delete[] p.rank;
+    auto start = std::chrono::steady_clock::now();
+    for (auto &box : query_boxes)
+    {
+        // auto result = diskzm.range_query(box);
+        diskzm.range_query(box);
+        // std::cout << "range query result size: " << result.size() << std::endl;
     }
-
+    auto end = std::chrono::steady_clock::now();
+    //cout the average time for range query
+    
+   
+    std::cout << "Range Query Time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()/1000 << " [μs]" << std::endl;
+    
+    //test knn query
+    std::vector<point<DIM>> query_points;
+    for(int i=0;i<1000;i++)
+    {
+        point<DIM> p;
+        for (size_t d = 0; d < DIM; ++d)
+        {
+            p[d] = std::rand() % 100000;
+        }
+        query_points.emplace_back(p);
+    }
+    start = std::chrono::steady_clock::now();
+    // auto result = diskzm.knn_query(p, 10);
+    for(auto &p:query_points)
+    {
+        diskzm.knn_query(p, 10);
+    }
+    // std::cout << "knn query result size: " << result.size() << std::endl;
+    end = std::chrono::steady_clock::now();
+    std::cout << "KNN Query Time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()/1000 << " [μs]" << std::endl;
     return 0;
 }

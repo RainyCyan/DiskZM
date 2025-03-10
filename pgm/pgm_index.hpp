@@ -90,8 +90,6 @@ namespace pgm
         long SegmentSize = sizeof(Segment);
         long SegmentCountPerBlock = long(BLOCK_SIZE / SegmentSize);
 
-        
-
         template <typename RandomIt>
         static void build(RandomIt first, RandomIt last,
                           size_t epsilon, size_t epsilon_recursive,
@@ -141,7 +139,7 @@ namespace pgm
             while (epsilon_recursive && last_n > 1)
             {
                 auto offset = levels_offsets[levels_offsets.size() - 2];
-                //new in_function to extract key from segments' first 
+                // new in_function to extract key from segments' first
                 auto in_fun_rec = [&](auto i)
                 { return std::pair<K, size_t>(segments[offset + i].key, i); };
                 last_n = build_level(epsilon_recursive, in_fun_rec, out_fun);
@@ -161,11 +159,11 @@ namespace pgm
                 return std::prev(std::upper_bound(segments.begin(), segments.begin() + segments_count(), key));
             }
 
-            auto it = segments.begin() + *(levels_offsets.end() - 2);//root segment
-            
+            auto it = segments.begin() + *(levels_offsets.end() - 2); // root segment
+
             for (auto l = int(height()) - 2; l >= 0; --l)
             {
-                auto level_begin = segments.begin() + levels_offsets[l]; 
+                auto level_begin = segments.begin() + levels_offsets[l];
                 auto pos = std::min<size_t>((*it)(key), std::next(it)->intercept);
                 auto lo = level_begin + PGM_SUB_EPS(pos, EpsilonRecursive + 1);
 
@@ -205,17 +203,17 @@ namespace pgm
 
         void item_block_offset(size_t it, int *block_to_fetch, int *item_offset)
         {
-            *block_to_fetch = int(it / SegmentCountPerBlock) + 1;//get block_fetch_id
-            *item_offset = it % SegmentCountPerBlock;//get position in the fetch block
+            *block_to_fetch = int(it / SegmentCountPerBlock) + 1; // get block_fetch_id
+            *item_offset = it % SegmentCountPerBlock;             // get position in the fetch block
         }
 
         size_t predict_pos(size_t it, FILE *file_handler, int *last_block, char *block_data, K key)
         {
-            std::cout<<"predict_pos"<<std::endl;
+            // std::cout<<"predict_pos"<<std::endl;
             int block_to_fetch = -1;
             int item_offset = -1;
             item_block_offset(it, &block_to_fetch, &item_offset);
-            std::cout<<"block_to_fetch:"<<block_to_fetch<<std::endl;
+            // std::cout<<"block_to_fetch:"<<block_to_fetch<<std::endl;
             read_block_or_not(file_handler, last_block, block_to_fetch, block_data);
             //        if (ACCESSED_BLOCK_COUNT_Index == 4) {
             //            int x = 0;
@@ -248,18 +246,18 @@ namespace pgm
 
         size_t segment_for_key_disk(FILE *file_handler, const K &key, int *lc)
         {
-            std::cout<<"segment_for_key_disk"<<std::endl;
+            // std::cout<<"segment_for_key_disk"<<std::endl;
             // do not consider the case `EpsilonRecursive == 0'
             int last_block = -1;
             char *block_data = new char[BLOCK_SIZE];
-            std::cout<<"levels_offsets.size()"<<levels_offsets.size()<<std::endl;
+            // std::cout<<"levels_offsets.size()"<<levels_offsets.size()<<std::endl;
             size_t it = *(levels_offsets.end() - 2);
-            std::cout<<"it"<<it<<std::endl;
+            // std::cout<<"it"<<it<<std::endl;
             for (auto l = int(height() - 2); l >= 0; l--)
             {
                 *lc += 1;
                 auto pos = predict_pos(it, file_handler, &last_block, block_data, key);
-                std::cout<<"predict_pos"<<pos<<std::endl;
+                // std::cout<<"predict_pos"<<pos<<std::endl;
                 size_t level_begin = levels_offsets[l];
                 size_t lo = level_begin + PGM_SUB_EPS(pos, EpsilonRecursive + 1);
 
@@ -303,7 +301,7 @@ namespace pgm
 
     public:
         static constexpr size_t epsilon_value = Epsilon;
-        long segs(){return SegmentCountPerBlock;}
+        long segs() { return SegmentCountPerBlock; }
         /**
          * Constructs an empty index.
          */
@@ -340,10 +338,9 @@ namespace pgm
             build(first, last, Epsilon, EpsilonRecursive, segments, levels_offsets);
             if (_inner_disk)
             {
-                std::cout<<"write file begin";
+                // std::cout<<"write file begin";
                 write_file(file_handler);
-                std::cout<<"write file end";
-                
+                // std::cout<<"write file end";
             }
         }
         // load pgm from disk file
@@ -355,16 +352,16 @@ namespace pgm
 
         void load_file(FILE *file_handler, bool inner_disk)
         {
-            //if inner_disk,just load meta data into memory
-            // std::cout << "call load_file" << std::endl;
+            // if inner_disk,just load meta data into memory
+            //  std::cout << "call load_file" << std::endl;
             char *block_data = new char[BLOCK_SIZE];
             read_block(file_handler, block_data, 0);
             int offset = 0;
             memcpy(&first_key, block_data + offset, sizeof(K));
-            std::cout << "first_key:" << first_key;
+            // std::cout << "first_key:" << first_key;
             offset += sizeof(K);
             memcpy(&n, block_data + offset, sizeof(size_t));
-            std::cout << "n:" << n;
+            // std::cout << "n:" << n;
             offset += sizeof(size_t);
             size_t level_size;
             memcpy(&level_size, block_data + offset, sizeof(size_t));
@@ -408,7 +405,7 @@ namespace pgm
         ApproxPos search(const K &key) const
         {
             auto k = std::max(first_key, key);
-            auto it = segment_for_key(k); 
+            auto it = segment_for_key(k);
             auto pos = std::min<size_t>((*it)(k), std::next(it)->intercept);
             auto lo = PGM_SUB_EPS(pos, Epsilon);
             auto hi = PGM_ADD_EPS(pos, Epsilon, n);
@@ -418,25 +415,28 @@ namespace pgm
         // todo: implement a disk version,
         ApproxPos search_disk(FILE *file_handler, const K &key, int *c, int *lc)
         {
-            std::cout<<"search_disk"<<std::endl;
+            // std::cout<<"search_disk"<<std::endl;
             auto k = std::max(first_key, key);
             // on disk version, we calculate the pos
             ACCESSED_BLOCK_COUNT_Index = 0;
             auto pos = segment_for_key_disk(file_handler, key, lc);
-            std::cout<<"pos"<<pos<<std::endl;
+            // std::cout<<"pos"<<pos<<std::endl;
             *c = ACCESSED_BLOCK_COUNT_Index;
             return {pos, PGM_SUB_EPS(pos, Epsilon), PGM_ADD_EPS(pos, Epsilon, n)};
         }
 
+        //TODO:range_disk query for pgm
+        
+
         void write_file(FILE *file)
         {
-            //first block:first_key|n|level_num|segments_num|level_offset|
-            //write meta info to first block
+            // first block:first_key|n|level_num|segments_num|level_offset|
+            // write meta info to first block
             int32_t block = 0;
             char *block_data = new char[BLOCK_SIZE];
-            std::cout<<"first_key"<<first_key<<std::endl;
-            std::cout<<"n"<<n<<std::endl;
-            std::cout<<"levels_offsets.size()"<<levels_offsets.size()<<std::endl;
+            // std::cout<<"first_key"<<first_key<<std::endl;
+            // std::cout<<"n"<<n<<std::endl;
+            // std::cout<<"levels_offsets.size()"<<levels_offsets.size()<<std::endl;
             memcpy(block_data, &first_key, sizeof(K));
             // write offsets info
             size_t *pointer = (size_t *)(block_data + sizeof(K));

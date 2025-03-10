@@ -105,6 +105,8 @@ namespace pgm
             metadata.base = base;
             metadata.buffer_max_size = buffer_max_size;
             metadata.used_levels = used_levels;
+            //write spatial features,like Dim,...
+            
             for (auto i = 0; i < 12; i++)
             {
                 metadata.item_count[i] = 0;
@@ -667,6 +669,7 @@ namespace pgm
 
         int range_on_disk(const K &lo, const K &hi, int len, int *c, ItemOnDisk *tmp_a, ItemOnDisk *tmp_b, int *fsize, ItemOnDisk *results = nullptr)
         {
+            int dc=0;
             ACCESSED_BLOCK_COUNT_Data = 0;
             if (lo > hi)
                 throw std::invalid_argument("lo > hi");
@@ -791,6 +794,7 @@ namespace pgm
 
                     offset = 0;
                     block_id += 1;
+                    dc++;
                 }
                 // here, when only to handle the case that the remaining tuples in left table
                 // append the remaining from one side
@@ -808,7 +812,8 @@ namespace pgm
             *c += ACCESSED_BLOCK_COUNT_Data;
             //            ItemOnDisk *out = (alternate ? tmp_a : tmp_b);
             *fsize = std::min(alternate ? used_a : used_b, len);
-            return (alternate ? 0 : 1);
+            // return (alternate ? 0 : 1);
+            return dc;
         }
 
         void insert_on_disk(K key, V value, long long *search_latency,

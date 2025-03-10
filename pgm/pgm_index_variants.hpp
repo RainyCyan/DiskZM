@@ -974,7 +974,7 @@ namespace pgm
         template <typename RandomIt>
         MultidimensionalPGMIndex(RandomIt first, RandomIt last) : data(), pgm()
         {
-            std::cout << "construct mpgm" << std::endl;
+            // std::cout << "construct mpgm" << std::endl;
             data.reserve(std::distance(first, last));
             std::for_each(first, last, [&](const auto &x)
                           {
@@ -1015,17 +1015,17 @@ namespace pgm
         // }
 
         std::vector<value_type> range_query(FILE* file_handler,const value_type &min, const value_type &max,int &tc){
-            std::cout<<"pgm range query"<<std::endl;
+            // std::cout<<"pgm range query"<<std::endl;
             std::vector<value_type> result;
             auto zmin=encode(min);
             auto zmax=encode(max);
-            std::cout<<"zmin"<<zmin<<"zmax"<<zmax<<std::endl;
+            // std::cout<<"zmin"<<zmin<<"zmax"<<zmax<<std::endl;
             int c,lc;
             c=lc=0;
             pgm::PGMIndex<uint64_t, Epsilon> pgm_tmp(file_handler,true);
-            std::cout<<"pgm_tmp search_disk"<<std::endl;
+            // std::cout<<"pgm_tmp search_disk"<<std::endl;
             auto min_pos=pgm_tmp.search_disk(file_handler,zmin,&c,&lc);
-            std::cout<<c<<std::endl;
+            // std::cout<<c<<std::endl;
             tc+=c;
             auto max_pos=pgm_tmp.search_disk(file_handler,zmax,&c,&lc);
             tc+=c;

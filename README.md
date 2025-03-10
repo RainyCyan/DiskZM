@@ -1,11 +1,11 @@
-# DiskZM 介绍
+# DiskHM 介绍
 >
 > Author:RainyCyan  
-Date:Feb,2025
+Date:March,2025
 <!-- short introduction -->
-## What is DiskZM
+## What is DiskHM
 
-`DiskZM`是多维学习型索引[ZM](https://ieeexplore.ieee.org/document/8788832)的磁盘化版本，其一维学习型索引采用了[PGM_Index](https://github.com/gvinciguerra/PGM-index)的多维变体，并编写了对应的磁盘持久化版本代码
+`DiskZM`是多维学习型索引[HM]的磁盘化版本，其一维学习型索引采用了[PGM_Index](https://github.com/gvinciguerra/PGM-index)的动态更新版本，并编写了对应的磁盘持久化版本代码
 
 ## Index Structure
 
